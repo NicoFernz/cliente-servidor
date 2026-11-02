@@ -1,7 +1,8 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
 import { environment } from '../../../environments/environment';
 import { Publicacion } from '../../core/modelos';
 import { SesionService } from '../../core/sesion.service';
@@ -75,6 +76,33 @@ describe('Inicio (HU-03)', () => {
     select.value = '';
     select.dispatchEvent(new Event('change'));
     http.expectOne((r) => r.url === `${api}/publicaciones` && !r.params.has('categoriaId')).flush({ publicaciones: [] });
+  });
+
+  it('el filtro queda en la URL y se recupera al volver (heurística 7)', async () => {
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([{ path: '', component: Inicio }])],
+    }).compileComponents();
+    http = TestBed.inject(HttpTestingController);
+
+    const harness = await RouterTestingHarness.create('/?categoria=2');
+    http.expectOne(`${api}/categorias`).flush({
+      categorias: [
+        { id: 1, nombre: 'Matemática', creadoEn: '' },
+        { id: 2, nombre: 'Programación', creadoEn: '' },
+      ],
+    });
+    http.expectOne((r) => r.url === `${api}/publicaciones` && r.params.get('categoriaId') === '2').flush({ publicaciones: [] });
+    await harness.fixture.whenStable();
+    const select = (harness.routeNativeElement as HTMLElement).querySelector<HTMLSelectElement>('#filtro-categoria')!;
+    expect(select.value).toBe('2');
+
+    select.value = '1';
+    select.dispatchEvent(new Event('change'));
+    http.expectOne((r) => r.url === `${api}/publicaciones` && r.params.get('categoriaId') === '1').flush({ publicaciones: [] });
+    await harness.fixture.whenStable();
+
+    expect(TestBed.inject(Router).url).toBe('/?categoria=1');
   });
 
   it('sin publicaciones muestra un mensaje', async () => {

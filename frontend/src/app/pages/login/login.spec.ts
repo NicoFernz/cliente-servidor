@@ -3,6 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { AvisosService } from '../../core/avisos.service';
 import { SesionService } from '../../core/sesion.service';
 import { Login } from './login';
 
@@ -73,6 +74,8 @@ describe('Login (HU-02)', () => {
     expect(sesion.token()).toBe('a.b.c');
     expect(sesion.usuario()?.nombre).toBe('Ana Pérez');
     expect(router.url).toBe('/publicaciones/nueva');
+    // Heurística 1
+    expect(TestBed.inject(AvisosService).aviso()).toBe('Hola, Ana Pérez. Iniciaste sesión.');
   });
 
   it('no redirige fuera del sitio aunque ?volver apunte a otro dominio', async () => {

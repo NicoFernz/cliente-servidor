@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { Publicacion, Usuario } from '../../core/modelos';
+import { AvisosService } from '../../core/avisos.service';
 import { SesionService } from '../../core/sesion.service';
 import { PublicacionForm } from './publicacion-form';
 
@@ -99,6 +100,7 @@ describe('PublicacionForm (HU-03)', () => {
     await fixture.whenStable();
 
     expect(router.url).toBe('/publicaciones/9');
+    expect(TestBed.inject(AvisosService).aviso()).toBe('Publicación creada.'); // Heurística 1
   });
 
   it('muestra los errores por campo que devuelve el servidor (400)', async () => {
@@ -139,6 +141,17 @@ describe('PublicacionForm (HU-03)', () => {
     await fixture.whenStable();
 
     expect(router.url).toBe('/publicaciones/5');
+    expect(TestBed.inject(AvisosService).aviso()).toBe('Cambios guardados.'); // Heurística 1
+  });
+
+  it('si todavía no hay categorías, explica por qué no se puede publicar (heurísticas 6 y 9)', async () => {
+    fixture = TestBed.createComponent(PublicacionForm);
+    await fixture.whenStable();
+    http.expectOne(`${api}/categorias`).flush({ categorias: [] });
+    await fixture.whenStable();
+
+    expect(pantalla().querySelector('[role="status"]')?.textContent).toContain('Todavía no hay categorías');
+    expect(pantalla().querySelector<HTMLButtonElement>('button[type="submit"]')!.disabled).toBe(true);
   });
 
   it('si la publicación es de otro usuario, no muestra el formulario', async () => {
