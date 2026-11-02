@@ -6,7 +6,7 @@ import { ReportesService } from '../../core/reportes.service';
 
 type Estado = 'cerrado' | 'abierto' | 'enviada' | 'repetida';
 
-/** HU-05: botón y formulario para denunciar una publicación. */
+/** HU-05: botón y formulario para reportar una publicación (en la interfaz se usa siempre "reportar", heurística 4). */
 @Component({
   selector: 'app-denuncia',
   imports: [ReactiveFormsModule],
@@ -30,7 +30,7 @@ export class Denuncia {
   protected errorValidacion(): string | null {
     const control = this.formulario.controls.motivo;
     if (!control.touched || !control.errors) return null;
-    return control.errors['required'] ? 'Contá el motivo de la denuncia' : 'El motivo debe tener entre 5 y 500 caracteres';
+    return control.errors['required'] ? 'Contá el motivo del reporte' : 'El motivo debe tener entre 5 y 500 caracteres';
   }
 
   protected abrir(): void {
@@ -64,7 +64,7 @@ export class Denuncia {
         this.errorEnvio.set(
           respuesta.status === 0
             ? 'No se pudo conectar con el servidor.'
-            : (error?.detalles?.['motivo'] ?? error?.mensaje ?? 'No se pudo enviar la denuncia.'),
+            : (error?.detalles?.['motivo'] ?? error?.mensaje ?? 'No se pudo enviar el reporte.'),
         );
       },
     });

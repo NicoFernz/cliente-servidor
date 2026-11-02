@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, si
 import { Router, RouterLink } from '@angular/router';
 import { ErrorApi, Publicacion } from '../../core/modelos';
 import { PublicacionesService } from '../../core/publicaciones.service';
+import { AvisosService } from '../../core/avisos.service';
 import { SesionService } from '../../core/sesion.service';
 import { Comentarios } from './comentarios';
 import { Denuncia } from './denuncia';
@@ -23,6 +24,7 @@ export class PublicacionDetalle implements OnInit {
   private readonly publicacionesService = inject(PublicacionesService);
   private readonly router = inject(Router);
   private readonly sesion = inject(SesionService);
+  private readonly avisos = inject(AvisosService);
 
   /** :id de la ruta (withComponentInputBinding). */
   readonly id = input.required<string>();
@@ -63,7 +65,10 @@ export class PublicacionDetalle implements OnInit {
     this.eliminando.set(true);
     this.errorEliminar.set(null);
     this.publicacionesService.eliminar(publicacion.id).subscribe({
-      next: () => void this.router.navigateByUrl('/'),
+      next: () => {
+        this.avisos.mostrar('Publicación eliminada.');
+        void this.router.navigateByUrl('/');
+      },
       error: (respuesta: HttpErrorResponse) => {
         this.eliminando.set(false);
         this.confirmando.set(false);

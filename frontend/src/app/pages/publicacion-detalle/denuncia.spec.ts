@@ -37,8 +37,8 @@ describe('Denuncia (HU-05)', () => {
     await fixture.whenStable();
   }
 
-  it('al principio solo muestra el botón "Denunciar publicación"', () => {
-    expect(pantalla().querySelector('.enlace-denuncia')?.textContent).toContain('Denunciar publicación');
+  it('al principio solo muestra el botón "Reportar publicación" (heurística 4)', () => {
+    expect(pantalla().querySelector('.enlace-denuncia')?.textContent).toContain('Reportar publicación');
     expect(pantalla().querySelector('form')).toBeNull();
   });
 
@@ -73,7 +73,7 @@ describe('Denuncia (HU-05)', () => {
     );
     await fixture.whenStable();
 
-    expect(pantalla().querySelector('[role="status"]')?.textContent).toContain('Tu denuncia quedó registrada');
+    expect(pantalla().querySelector('[role="status"]')?.textContent).toContain('Tu reporte quedó registrado');
     expect(pantalla().querySelector('form')).toBeNull();
   });
 
@@ -82,12 +82,12 @@ describe('Denuncia (HU-05)', () => {
 
     await enviar('Contenido ofensivo');
     http.expectOne({ method: 'POST', url }).flush(
-      { error: { codigo: 'CONFLICTO', mensaje: 'Ya denunciaste esta publicación' } },
+      { error: { codigo: 'CONFLICTO', mensaje: 'Ya reportaste esta publicación' } },
       { status: 409, statusText: 'Conflict' },
     );
     await fixture.whenStable();
 
-    expect(pantalla().querySelector('[role="status"]')?.textContent).toContain('Ya denunciaste esta publicación');
+    expect(pantalla().querySelector('[role="status"]')?.textContent).toContain('Ya reportaste esta publicación');
     expect(pantalla().querySelector('.error')).toBeNull();
   });
 
@@ -96,11 +96,11 @@ describe('Denuncia (HU-05)', () => {
 
     await enviar('Contenido ofensivo');
     http.expectOne({ method: 'POST', url }).flush(
-      { error: { codigo: 'NO_ENCONTRADO', mensaje: 'Publicación no encontrado' } },
+      { error: { codigo: 'NO_ENCONTRADO', mensaje: 'Publicación inexistente' } },
       { status: 404, statusText: 'Not Found' },
     );
     await fixture.whenStable();
 
-    expect(pantalla().querySelector('#error-denuncia')?.textContent).toContain('Publicación no encontrado');
+    expect(pantalla().querySelector('#error-denuncia')?.textContent).toContain('Publicación inexistente');
   });
 });

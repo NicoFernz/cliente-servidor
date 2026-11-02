@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Component } from '@angular/core';
 import { App } from './app';
+import { AvisosService } from './core/avisos.service';
 import { SesionService } from './core/sesion.service';
 
 @Component({ template: '' })
@@ -48,5 +49,26 @@ describe('App', () => {
     await fixture.whenStable();
 
     expect(TestBed.inject(SesionService).autenticado()).toBe(false);
+    expect(TestBed.inject(AvisosService).aviso()).toBe('Cerraste sesión.'); // Heurística 1
+  });
+
+  it('muestra los avisos globales y permite cerrarlos (heurística 1)', async () => {
+    const fixture = TestBed.createComponent(App);
+    TestBed.inject(AvisosService).mostrar('Publicación creada.');
+    await fixture.whenStable();
+    const compilado = fixture.nativeElement as HTMLElement;
+
+    expect(compilado.querySelector('.aviso-global[role="status"]')?.textContent).toContain('Publicación creada.');
+    compilado.querySelector<HTMLButtonElement>('.aviso-global button')!.click();
+    await fixture.whenStable();
+
+    expect(compilado.querySelector('.aviso-global')).toBeNull();
+  });
+
+  it('el enlace de ayuda está siempre visible (heurística 10)', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+
+    expect((fixture.nativeElement as HTMLElement).querySelector('nav a[href="/ayuda"]')?.textContent).toContain('Ayuda');
   });
 });

@@ -35,7 +35,7 @@
           <a class="titulo" [routerLink]="['/publicaciones', reporte.publicacion.id]">{{ reporte.publicacion.titulo }}</a>
           <p class="motivo">«{{ reporte.motivo }}»</p>
           <p class="meta">
-            Denunciado por {{ reporte.autor.nombre }} ·
+            Reportado por {{ reporte.autor.nombre }} ·
             <time [attr.datetime]="reporte.creadoEn">{{ reporte.creadoEn | date: 'd/M/yyyy HH:mm' }}</time>
           </p>
 

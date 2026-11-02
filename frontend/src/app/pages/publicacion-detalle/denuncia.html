@@ -1,12 +1,12 @@
 @switch (estado()) {
   @case ('cerrado') {
-    <button type="button" class="enlace-denuncia" (click)="abrir()">Denunciar publicación</button>
+    <button type="button" class="enlace-denuncia" (click)="abrir()">Reportar publicación</button>
   }
   @case ('abierto') {
     <form class="denuncia" [formGroup]="formulario" (ngSubmit)="enviar()" novalidate aria-labelledby="titulo-denuncia">
-      <h2 id="titulo-denuncia">Denunciar publicación</h2>
+      <h2 id="titulo-denuncia">Reportar publicación</h2>
       <div class="campo">
-        <label for="motivo-denuncia">Motivo</label>
+        <label for="motivo-denuncia">Motivo del reporte</label>
         <textarea
           id="motivo-denuncia"
           formControlName="motivo"
@@ -19,21 +19,21 @@
         @if (errorValidacion() ?? errorEnvio(); as error) {
           <p id="error-denuncia" class="error">{{ error }}</p>
         } @else {
-          <p id="ayuda-denuncia" class="ayuda">Entre 5 y 500 caracteres. La revisará un administrador.</p>
+          <p id="ayuda-denuncia" class="ayuda">Entre 5 y 500 caracteres. Lo revisará un administrador.</p>
         }
       </div>
       <div class="botones">
         <button type="submit" class="boton boton--peligro" [disabled]="enviando()">
-          {{ enviando() ? 'Enviando…' : 'Enviar denuncia' }}
+          {{ enviando() ? 'Enviando…' : 'Enviar reporte' }}
         </button>
         <button type="button" class="boton boton--secundario" (click)="estado.set('cerrado')">Cancelar</button>
       </div>
     </form>
   }
   @case ('enviada') {
-    <p class="aviso aviso--exito" role="status">Gracias. Tu denuncia quedó registrada y la revisará un administrador.</p>
+    <p class="aviso aviso--exito" role="status">Gracias. Tu reporte quedó registrado y lo revisará un administrador.</p>
   }
   @case ('repetida') {
-    <p class="aviso" role="status">Ya denunciaste esta publicación. Un administrador la va a revisar.</p>
+    <p class="aviso" role="status">Ya reportaste esta publicación. Un administrador la va a revisar.</p>
   }
 }

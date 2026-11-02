@@ -103,11 +103,11 @@ describe('Comentarios (HU-04)', () => {
 
     await escribirYEnviar('Hola');
     http.expectOne({ method: 'POST', url }).flush(
-      { error: { codigo: 'NO_ENCONTRADO', mensaje: 'Publicación no encontrado' } },
+      { error: { codigo: 'NO_ENCONTRADO', mensaje: 'Publicación inexistente' } },
       { status: 404, statusText: 'Not Found' },
     );
     await fixture.whenStable();
 
-    expect(pantalla().querySelector('#error-comentario')?.textContent).toContain('Publicación no encontrado');
+    expect(pantalla().querySelector('#error-comentario')?.textContent).toContain('Publicación inexistente');
   });
 });

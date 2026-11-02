@@ -7,14 +7,23 @@
         <a routerLink="/admin/categorias">Categorías</a>
         <a routerLink="/admin/reportes">Reportes</a>
       }
+      <a routerLink="/ayuda">Ayuda</a>
       <span class="usuario">{{ usuario.nombre }}@if (sesion.esAdmin()) { <span class="etiqueta">admin</span>}</span>
       <button type="button" class="enlace" (click)="cerrarSesion()">Cerrar sesión</button>
     } @else {
+      <a routerLink="/ayuda">Ayuda</a>
       <a routerLink="/login">Iniciar sesión</a>
       <a routerLink="/registro">Crear cuenta</a>
     }
   </nav>
 </header>
+
+@if (avisos.aviso(); as texto) {
+  <p class="aviso aviso--exito aviso-global" role="status">
+    <span>{{ texto }}</span>
+    <button type="button" class="enlace" aria-label="Cerrar aviso" (click)="avisos.cerrar()">×</button>
+  </p>
+}
 
 <main>
   <router-outlet />

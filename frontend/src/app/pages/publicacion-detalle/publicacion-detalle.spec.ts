@@ -5,6 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { Publicacion, Usuario } from '../../core/modelos';
+import { AvisosService } from '../../core/avisos.service';
 import { SesionService } from '../../core/sesion.service';
 import { PublicacionDetalle } from './publicacion-detalle';
 
@@ -48,7 +49,7 @@ describe('PublicacionDetalle (HU-03)', () => {
     await fixture.whenStable();
     const solicitud = http.expectOne(url);
     if (respuesta === 404) {
-      solicitud.flush({ error: { codigo: 'NO_ENCONTRADO', mensaje: 'Publicación no encontrado' } }, { status: 404, statusText: 'Not Found' });
+      solicitud.flush({ error: { codigo: 'NO_ENCONTRADO', mensaje: 'Publicación inexistente' } }, { status: 404, statusText: 'Not Found' });
     } else {
       solicitud.flush({ publicacion: respuesta });
       await fixture.whenStable();
@@ -105,6 +106,7 @@ describe('PublicacionDetalle (HU-03)', () => {
     await fixture.whenStable();
 
     expect(router.url).toBe('/');
+    expect(TestBed.inject(AvisosService).aviso()).toBe('Publicación eliminada.'); // Heurística 1
   });
 
   it('si el servidor rechaza la eliminación (403) muestra su mensaje', async () => {
