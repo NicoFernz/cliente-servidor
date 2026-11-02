@@ -51,7 +51,7 @@ describe('AdminReportes (HU-06b)', () => {
 
     expect(titulos()).toEqual(['Publicación dudosa', 'Otra']);
     expect(pantalla().querySelector('.reporte .motivo')?.textContent).toContain('Contenido ofensivo');
-    expect(pantalla().querySelector('.reporte .meta')?.textContent).toContain('Beto');
+    expect(pantalla().querySelector('.reporte .meta')?.textContent).toContain('Reportado por Beto'); // Heurística 4
     expect(pantalla().querySelector('.reporte a')?.getAttribute('href')).toBe('/publicaciones/10');
   });
 
@@ -122,12 +122,12 @@ describe('AdminReportes (HU-06b)', () => {
 
     boton('Descartar').click();
     http.expectOne({ method: 'PATCH', url: `${api}/reportes/1` }).flush(
-      { error: { codigo: 'NO_ENCONTRADO', mensaje: 'Reporte no encontrado' } },
+      { error: { codigo: 'NO_ENCONTRADO', mensaje: 'Reporte inexistente' } },
       { status: 404, statusText: 'Not Found' },
     );
     await fixture.whenStable();
 
     expect(titulos()).toEqual(['Publicación dudosa']);
-    expect(pantalla().querySelector('.reporte [role="alert"]')?.textContent).toContain('Reporte no encontrado');
+    expect(pantalla().querySelector('.reporte [role="alert"]')?.textContent).toContain('Reporte inexistente');
   });
 });

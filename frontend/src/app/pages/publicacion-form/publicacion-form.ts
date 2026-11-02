@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { CategoriasService } from '../../core/categorias.service';
 import { Categoria, ErrorApi } from '../../core/modelos';
 import { PublicacionesService } from '../../core/publicaciones.service';
+import { AvisosService } from '../../core/avisos.service';
 import { SesionService } from '../../core/sesion.service';
 
 type Campo = 'titulo' | 'contenido' | 'categoriaId';
@@ -38,6 +39,7 @@ export class PublicacionForm implements OnInit {
   private readonly publicacionesService = inject(PublicacionesService);
   private readonly router = inject(Router);
   private readonly sesion = inject(SesionService);
+  private readonly avisos = inject(AvisosService);
 
   /** :id de la ruta: vacío al crear. */
   readonly id = input<string>();
@@ -49,6 +51,8 @@ export class PublicacionForm implements OnInit {
   });
 
   protected readonly categorias = signal<Categoria[]>([]);
+  /** Heurísticas 6 y 9: sin categorías no se puede publicar; se explica en lugar de dejar un selector vacío. */
+  protected readonly sinCategorias = signal(false);
   protected readonly cargando = signal(false);
   protected readonly bloqueo = signal<string | null>(null);
   protected readonly enviando = signal(false);
@@ -59,7 +63,10 @@ export class PublicacionForm implements OnInit {
     inject(CategoriasService)
       .listar()
       .subscribe({
-        next: (categorias) => this.categorias.set(categorias),
+        next: (categorias) => {
+          this.categorias.set(categorias);
+          this.sinCategorias.set(categorias.length === 0);
+        },
         error: () => this.errorGeneral.set('No se pudieron cargar las categorías.'),
       });
   }
@@ -124,7 +131,10 @@ export class PublicacionForm implements OnInit {
       : this.publicacionesService.crear(datos);
 
     operacion.subscribe({
-      next: (publicacion) => void this.router.navigate(['/publicaciones', publicacion.id]),
+      next: (publicacion) => {
+        this.avisos.mostrar(this.editando() ? 'Cambios guardados.' : 'Publicación creada.');
+        void this.router.navigate(['/publicaciones', publicacion.id]);
+      },
       error: (respuesta: HttpErrorResponse) => {
         this.enviando.set(false);
         const error = (respuesta.error as { error?: ErrorApi } | null)?.error;

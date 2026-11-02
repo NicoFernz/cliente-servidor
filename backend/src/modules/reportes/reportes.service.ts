@@ -20,7 +20,7 @@ export async function denunciar(publicacionId: number, autorId: number, datos: {
     });
   } catch (error) {
     throw traducirErrorPrisma(error, {
-      unico: AppError.conflicto('Ya denunciaste esta publicación'),
+      unico: AppError.conflicto('Ya reportaste esta publicación'),
       claveForanea: AppError.noEncontrado('Publicación'),
     });
   }

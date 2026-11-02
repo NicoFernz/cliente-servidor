@@ -55,7 +55,8 @@ describe('POST /api/publicaciones/:id/reportes (HU-05)', () => {
     const res = await denunciar('Sigue siendo ofensivo');
 
     expect(res.status).toBe(409);
-    expect(res.body.error.mensaje).toBe('Ya denunciaste esta publicación');
+    // Heurística 4: el mismo término ("reportar") que usa la interfaz.
+    expect(res.body.error.mensaje).toBe('Ya reportaste esta publicación');
   });
 
   it.each([

@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CategoriasService } from '../../core/categorias.service';
 import { Categoria, Publicacion } from '../../core/modelos';
 import { PublicacionesService } from '../../core/publicaciones.service';
@@ -16,10 +16,14 @@ import { SesionService } from '../../core/sesion.service';
 })
 export class Inicio {
   private readonly publicacionesService = inject(PublicacionesService);
+  private readonly router = inject(Router);
   protected readonly sesion = inject(SesionService);
 
   protected readonly categorias = signal<Categoria[]>([]);
-  protected readonly categoriaId = signal<number | undefined>(undefined);
+  /** Heurística 7: el filtro vive en la URL (?categoria=), así se conserva al volver de un detalle y se puede compartir. */
+  protected readonly categoriaId = signal<number | undefined>(
+    Number(inject(ActivatedRoute).snapshot.queryParamMap.get('categoria')) || undefined,
+  );
   protected readonly publicaciones = signal<Publicacion[]>([]);
   protected readonly cargando = signal(true);
   protected readonly error = signal<string | null>(null);
@@ -48,6 +52,7 @@ export class Inicio {
 
   protected filtrar(valor: string): void {
     this.categoriaId.set(valor ? Number(valor) : undefined);
+    void this.router.navigate([], { queryParams: { categoria: this.categoriaId() ?? null }, replaceUrl: true });
     this.cargar();
   }
 

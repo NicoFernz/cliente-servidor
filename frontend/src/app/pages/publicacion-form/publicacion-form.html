@@ -10,6 +10,12 @@
     @if (errorGeneral(); as mensaje) {
       <div class="aviso aviso--error" role="alert">{{ mensaje }}</div>
     }
+    @if (sinCategorias()) {
+      <p class="aviso" role="status">
+        Todavía no hay categorías, y cada publicación necesita una. Un administrador tiene que crear al menos una
+        para poder publicar.
+      </p>
+    }
 
     <form [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
       <div class="campo">
@@ -66,7 +72,7 @@
       </div>
 
       <div class="botones">
-        <button type="submit" class="boton" [disabled]="enviando()">
+        <button type="submit" class="boton" [disabled]="enviando() || sinCategorias()">
           {{ enviando() ? 'Guardando…' : editando() ? 'Guardar cambios' : 'Publicar' }}
         </button>
         <a [routerLink]="editando() ? ['/publicaciones', id()] : ['/']">Cancelar</a>

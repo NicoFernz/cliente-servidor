@@ -26,7 +26,7 @@ export class AppError extends Error {
   }
 
   static noEncontrado(recurso: string) {
-    return new AppError(404, 'NO_ENCONTRADO', `${recurso} no encontrado`);
+    return new AppError(404, 'NO_ENCONTRADO', `${recurso} inexistente`);
   }
 
   static conflicto(mensaje: string) {
