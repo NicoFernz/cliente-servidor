@@ -438,3 +438,21 @@ En el PR #13 (ejecución `41362741695`, evento `pull_request`), con PostgreSQL e
 | Frontend (Angular) | 25 s | **11 archivos / 72 pruebas pasadas**; build OK |
 
 Los números coinciden con los de la simulación local, lo que confirma que las pruebas no dependen de la configuración de una máquina. Al mergear el #13 se disparó la ejecución por `push` en `develop`.
+
+## Heurísticas de usabilidad (2026-11-02)
+
+Rama `feature/heuristicas`. Se revisó el frontend contra las diez heurísticas de Nielsen ([heuristicas.md](heuristicas.md)) y solo se cambió lo que faltaba (H1, H2, H4, H6, H7, H9, H10).
+
+| Paso | Comando | Resultado real |
+|---|---|---|
+| RED backend | `npx vitest run tests/unit/AppError.test.ts tests/integration/reportes.routes.test.ts` | **4 fallan**: `expected 'Publicación no encontrado' to be 'Publicación inexistente'` (×3) y `expected 'Ya denunciaste esta publicación' to be 'Ya reportaste esta publicación'` |
+| RED frontend | `npx ng test --watch=false` | no compila: `TS2307: Cannot find module './core/avisos.service'` y `'./ayuda'` (las piezas nuevas todavía no existían) |
+| GREEN frontend | ídem | **13 archivos, 80 pruebas pasadas**; `ng build` OK (chunk `ayuda` 3,2 kB) |
+| GREEN backend | `npm test` · `npm run test:bdd` | **20 archivos, 158 pruebas pasadas** · **53 escenarios / 423 pasos pasados**; typecheck, lint y build OK |
+
+Prueba manual en el navegador (`npm run dev` + `ng serve`, base `foro_dev`):
+- Al iniciar sesión: "Hola, Carla Fase4. Iniciaste sesión." arriba del inicio; desaparece en la navegación siguiente. La cabecera muestra "Ayuda".
+- Filtrar por Matemática → la URL pasa a `/?categoria=1`; abrir una publicación y volver con el botón del navegador → el filtro sigue en "Matemática".
+- En una publicación de otra cuenta aparece "Reportar publicación" (antes "Denunciar").
+- `/ayuda` muestra las cinco secciones; `GET /api/publicaciones/9999` responde "Publicación inexistente".
+- "Cerrar sesión" → "Cerraste sesión." en la pantalla de login.

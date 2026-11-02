@@ -109,9 +109,9 @@ Cuerpos, respuestas y códigos de error de cada endpoint: [docs/arquitectura.md]
 
 | Suite | Cantidad | Dónde |
 |---|---|---|
-| Backend: unitarias e integración | 19 archivos, 155 pruebas | `backend/tests/` |
+| Backend: unitarias e integración | 20 archivos, 158 pruebas | `backend/tests/` |
 | Backend: aceptación (BDD) | 53 escenarios, 423 pasos (incluye el flujo completo de punta a punta) | `backend/features/` |
-| Frontend: componentes y servicios | 11 archivos, 72 pruebas | `frontend/src/**/*.spec.ts` |
+| Frontend: componentes y servicios | 13 archivos, 80 pruebas | `frontend/src/**/*.spec.ts` |
 
 Todas corren en cada push y pull request a `develop` y `main` ([workflow](.github/workflows/ci.yml)). Estrategia y evidencia de cada ciclo RED → GREEN → REFACTOR: [docs/testing.md](docs/testing.md).
 
@@ -121,7 +121,7 @@ Historias de usuario priorizadas, iteraciones cortas (una historia por pull requ
 
 ## Heurísticas
 
-[docs/heuristicas.md](docs/heuristicas.md) — **pendiente**: falta el material de la cátedra con las diez heurísticas.
+Las diez heurísticas de usabilidad de Nielsen aplicadas al frontend, cada una con su aplicación, evidencia y prueba de verificación: [docs/heuristicas.md](docs/heuristicas.md). Para los usuarios, el foro tiene una página **Ayuda** (`/ayuda`).
 
 ## Integrar nuevas features
 
