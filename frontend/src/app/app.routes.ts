@@ -15,6 +15,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/registro/registro').then((m) => m.Registro),
   },
   {
+    path: 'ayuda',
+    title: 'Ayuda · Foro universitario',
+    loadComponent: () => import('./pages/ayuda/ayuda').then((m) => m.Ayuda),
+  },
+  {
     path: 'login',
     title: 'Iniciar sesión · Foro universitario',
     loadComponent: () => import('./pages/login/login').then((m) => m.Login),

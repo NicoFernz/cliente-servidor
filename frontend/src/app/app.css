@@ -58,3 +58,18 @@
 main {
   padding: 0 1rem;
 }
+
+.aviso-global {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 48rem;
+  margin: 1rem auto 0;
+}
+
+.aviso-global .enlace {
+  color: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+}

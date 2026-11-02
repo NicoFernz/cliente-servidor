@@ -11,7 +11,7 @@
     <select id="filtro-categoria" (change)="filtrar($any($event.target).value)">
       <option value="">Todas</option>
       @for (categoria of categorias(); track categoria.id) {
-        <option [value]="categoria.id">{{ categoria.nombre }}</option>
+        <option [value]="categoria.id" [selected]="categoria.id === categoriaId()">{{ categoria.nombre }}</option>
       }
     </select>
   </div>

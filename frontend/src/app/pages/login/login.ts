@@ -4,6 +4,7 @@ import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { ErrorApi } from '../../core/modelos';
+import { AvisosService } from '../../core/avisos.service';
 import { SesionService } from '../../core/sesion.service';
 
 type Campo = 'email' | 'password';
@@ -25,6 +26,7 @@ export class Login {
   private readonly router = inject(Router);
   private readonly ruta = inject(ActivatedRoute);
   protected readonly sesion = inject(SesionService);
+  private readonly avisos = inject(AvisosService);
 
   protected readonly formulario = inject(NonNullableFormBuilder).group({
     email: ['', Validators.required],
@@ -52,8 +54,9 @@ export class Login {
 
     const { email, password } = this.formulario.getRawValue();
     this.auth.iniciarSesion({ email: email.trim(), password }).subscribe({
-      next: () => {
+      next: ({ usuario }) => {
         this.enviando.set(false);
+        this.avisos.mostrar(`Hola, ${usuario.nombre}. Iniciaste sesión.`);
         void this.router.navigateByUrl(this.destino());
       },
       error: (respuesta: HttpErrorResponse) => {
