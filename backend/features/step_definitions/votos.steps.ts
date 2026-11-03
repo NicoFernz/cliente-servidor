@@ -19,7 +19,7 @@ When(
   'voto {string} en la publicación {string}',
   async function (this: ForoWorld, valor: string, titulo: string) {
     const id = await idPublicacion(titulo);
-    this.respuesta = await conToken(this, request(app).put(`/api/publicaciones/${id}/voto`)).send({ valor });
+    this.respuesta = await conToken(this, request(app).put(`/api/votos/publicaciones/${id}`)).send({ valor });
   },
 );
 
@@ -27,7 +27,7 @@ When(
   'voto {string} en la publicación {string} sin iniciar sesión',
   async function (this: ForoWorld, valor: string, titulo: string) {
     const id = await idPublicacion(titulo);
-    this.respuesta = await request(app).put(`/api/publicaciones/${id}/voto`).send({ valor });
+    this.respuesta = await request(app).put(`/api/votos/publicaciones/${id}`).send({ valor });
   },
 );
 
@@ -46,7 +46,7 @@ When(
     const comentario = await prisma.comentario.findFirstOrThrow({ where: { publicacion: { titulo } } });
     this.respuesta = await conToken(
       this,
-      request(app).put(`/api/publicaciones/${await idPublicacion(titulo)}/comentarios/${comentario.id}/voto`),
+      request(app).put(`/api/votos/comentarios/${comentario.id}`),
     ).send({ valor });
   },
 );
