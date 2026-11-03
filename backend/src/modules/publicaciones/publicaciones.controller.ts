@@ -35,6 +35,6 @@ export const eliminar: RequestHandler = async (req, res) => {
 export const cambiarVisibilidad: RequestHandler = async (req, res) => {
   const id = idDeRuta(req.params.id, RECURSO);
   const { oculta } = parsear(esquemaCambioVisibilidad, req.body);
-  const publicacion = await publicacionesService.cambiarVisibilidadPublicacion(id, oculta);
+  const publicacion = await publicacionesService.cambiarVisibilidadPublicacion(id, oculta, req.usuario!.id);
   res.json({ publicacion });
 };

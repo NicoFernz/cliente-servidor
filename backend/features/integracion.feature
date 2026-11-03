@@ -54,7 +54,7 @@ Característica: Flujo completo del foro
     # HU-06b · el administrador elimina la publicación denunciada
     Cuando elimino la publicación "Oferta de apuntes"
     Entonces la respuesta tiene código 204
-    Y la publicación "Oferta de apuntes" ya no existe
+    Y la publicación "Oferta de apuntes" fue eliminada lógicamente
     Y no hay reportes pendientes
     Cuando consulto las publicaciones
     Entonces no se lista ninguna publicación

@@ -15,7 +15,7 @@ const ETIQUETAS: Record<EstadoReporte, string> = {
 
 /**
  * HU-06b: panel de moderación (/admin/reportes, solo ADMIN). Un reporte pendiente se puede marcar
- * resuelto, descartar o resolver eliminando la publicación (que borra también sus reportes).
+ * resuelto, descartar o resolver eliminando lógicamente la publicación.
  */
 @Component({
   selector: 'app-admin-reportes',
@@ -81,7 +81,7 @@ export class AdminReportes {
     const { id, titulo } = reporte.publicacion;
     this.ejecutar(reporte, this.publicacionesService.eliminar(id), () => {
       this.reportes.update((lista) => lista.filter((r) => r.publicacion.id !== id));
-      this.aviso.set(`Se eliminó la publicación «${titulo}» y sus reportes.`);
+      this.aviso.set(`Se eliminó la publicación «${titulo}»; sus reportes se conservan.`);
     });
   }
 

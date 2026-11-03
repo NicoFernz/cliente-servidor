@@ -56,8 +56,8 @@ describe('moderacion.service · historial (HU-09)', () => {
   });
 
   it('filtra por acción, rechaza una publicación inexistente y conserva los datos al eliminar', async () => {
-    await cambiarVisibilidadPublicacion(publicacionId, true, adminId);
     await comentar(publicacionId, betoId, { contenido: 'La publicación tiene contexto importante.' });
+    await cambiarVisibilidadPublicacion(publicacionId, true, adminId);
     await eliminarPublicacion(publicacionId, { id: adminId, rol: 'ADMIN' });
 
     const eventos = await listarHistorial({ publicacionId, accion: 'PUBLICACION_ELIMINADA' });
@@ -67,6 +67,24 @@ describe('moderacion.service · historial (HU-09)', () => {
     expect(await prisma.comentario.count({ where: { publicacionId } })).toBe(1);
     expect(await prisma.reporte.count({ where: { id: reporteId } })).toBe(1);
     await expect(listarHistorial({ publicacionId: 9999 })).rejects.toMatchObject({ status: 404 });
+  });
+
+  it('repetir el mismo estado de reporte no agrega otro evento', async () => {
+    await cambiarEstado(reporteId, { estado: 'RESUELTO' }, adminId);
+    await cambiarEstado(reporteId, { estado: 'RESUELTO' }, adminId);
+
+    const eventos = await listarHistorial({ publicacionId, accion: 'REPORTE_RESUELTO' });
+
+    expect(eventos).toHaveLength(1);
+  });
+
+  it('repetir la misma visibilidad no agrega otro evento', async () => {
+    await cambiarVisibilidadPublicacion(publicacionId, true, adminId);
+    await cambiarVisibilidadPublicacion(publicacionId, true, adminId);
+
+    const eventos = await listarHistorial({ publicacionId, accion: 'PUBLICACION_OCULTADA' });
+
+    expect(eventos).toHaveLength(1);
   });
 
   it('no permite modificar ni borrar eventos de auditoría', async () => {

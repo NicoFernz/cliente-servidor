@@ -68,3 +68,19 @@ export interface VisibilidadPublicacion {
   oculta: boolean;
   ocultaEn: string | null;
 }
+
+export type AccionModeracion =
+  | 'REPORTE_RESUELTO'
+  | 'REPORTE_DESCARTADO'
+  | 'PUBLICACION_OCULTADA'
+  | 'PUBLICACION_RESTAURADA'
+  | 'PUBLICACION_ELIMINADA';
+
+export interface EventoModeracion {
+  id: number;
+  accion: AccionModeracion;
+  creadoEn: string;
+  actor: { id: number; nombre: string; rol: Rol };
+  publicacion: { id: number; titulo: string };
+  reporte: { id: number; estado: EstadoReporte; motivo: string } | null;
+}

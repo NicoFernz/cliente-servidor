@@ -35,6 +35,14 @@ Característica: Historial de moderación y borrado lógico
     Y la publicación "Publicación dudosa" está eliminada lógicamente conservando comentarios y reportes
     Cuando consulto la publicación "Publicación dudosa"
     Entonces la respuesta tiene código 404
+    Cuando consulto las publicaciones
+    Entonces no se lista ninguna publicación
+    Cuando consulto los comentarios de la publicación "Publicación dudosa"
+    Entonces la respuesta tiene código 404
+    Cuando comento "No debería estar disponible." en la publicación "Publicación dudosa"
+    Entonces la respuesta tiene código 404
+    Cuando denuncio la publicación "Publicación dudosa" con el motivo "Contenido ofensivo"
+    Entonces la respuesta tiene código 404
     Cuando consulto el historial de la publicación "Publicación dudosa"
     Entonces el historial registra las acciones "PUBLICACION_ELIMINADA" en ese orden
 
