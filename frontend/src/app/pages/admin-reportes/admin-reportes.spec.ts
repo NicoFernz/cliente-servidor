@@ -117,6 +117,27 @@ describe('AdminReportes (HU-06b)', () => {
     expect(pantalla().querySelector('[role="status"]')?.textContent).toContain('Se eliminó la publicación');
   });
 
+  it('oculta y restaura una publicación desde el panel', async () => {
+    await responderListado('PENDIENTE', [reporte(1, 10, 'Publicación dudosa')]);
+
+    boton('Ocultar durante revisión').click();
+    const ocultar = http.expectOne({ method: 'PATCH', url: `${api}/publicaciones/10/moderacion` });
+    expect(ocultar.request.body).toEqual({ oculta: true });
+    ocultar.flush({
+      publicacion: { id: 10, titulo: 'Publicación dudosa', oculta: true, ocultaEn: '2026-11-03T12:00:00Z' },
+    });
+    await fixture.whenStable();
+
+    expect(boton('Restaurar publicación')).toBeTruthy();
+    boton('Restaurar publicación').click();
+    const restaurar = http.expectOne({ method: 'PATCH', url: `${api}/publicaciones/10/moderacion` });
+    expect(restaurar.request.body).toEqual({ oculta: false });
+    restaurar.flush({ publicacion: { id: 10, titulo: 'Publicación dudosa', oculta: false, ocultaEn: null } });
+    await fixture.whenStable();
+
+    expect(boton('Ocultar durante revisión')).toBeTruthy();
+  });
+
   it('si una acción falla muestra el error en ese reporte y lo deja en la lista', async () => {
     await responderListado('PENDIENTE', [reporte(1, 10, 'Publicación dudosa')]);
 
