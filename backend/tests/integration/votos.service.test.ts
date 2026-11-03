@@ -2,9 +2,8 @@ import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { registrar } from '../../src/modules/auth/auth.service';
 import { crearCategoria } from '../../src/modules/categorias/categorias.service';
 import { crearPublicacion, listarPublicaciones } from '../../src/modules/publicaciones/publicaciones.service';
-import { comentar } from '../../src/modules/comentarios/comentarios.service';
+import { comentar, listarComentarios } from '../../src/modules/comentarios/comentarios.service';
 import {
-  listarComentarios,
   quitarVotoComentario,
   quitarVotoPublicacion,
   votarComentario,
@@ -42,7 +41,7 @@ describe('votos.service · publicaciones y comentarios (HU-07)', () => {
     await votarPublicacion(publicacionId, betoId, 'NEGATIVO');
 
     expect(await prisma.votoPublicacion.count({ where: { publicacionId, usuarioId: betoId } })).toBe(1);
-    expect((await listarPublicaciones({}))[0].votos).toEqual({ positivos: 0, negativos: 1, miVoto: null });
+    expect((await listarPublicaciones({}, betoId))[0].votos).toEqual({ positivos: 0, negativos: 1, miVoto: 'NEGATIVO' });
   });
 
   it('el autor no puede votar su propia publicación', async () => {

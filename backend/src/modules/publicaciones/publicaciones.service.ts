@@ -2,6 +2,7 @@ import { traducirErrorPrisma } from '../../db/errores';
 import { prisma } from '../../db/prisma';
 import { AppError } from '../../errors/AppError';
 import type { UsuarioToken } from '../auth/auth.service';
+import { agregarVotosPublicaciones } from '../votos/votos.service';
 
 /** La FK de categoría falla (P2003) si la categoría no existe: es un dato inválido, no un 500. */
 const categoriaInexistente = () => ({ claveForanea: AppError.validacion({ categoriaId: 'La categoría no existe' }) });
@@ -24,20 +25,21 @@ const camposPublicos = {
 } as const;
 
 /** HU-03: cualquier visitante lista publicaciones, las más recientes primero. */
-export function listarPublicaciones(filtro: { categoriaId?: number }) {
-  return prisma.publicacion.findMany({
+export async function listarPublicaciones(filtro: { categoriaId?: number }, usuarioId?: number) {
+  const publicaciones = await prisma.publicacion.findMany({
     where: { categoriaId: filtro.categoriaId },
     select: camposPublicos,
     orderBy: [{ creadoEn: 'desc' }, { id: 'desc' }],
   });
+  return agregarVotosPublicaciones(publicaciones, usuarioId);
 }
 
-export async function obtenerPublicacion(id: number) {
+export async function obtenerPublicacion(id: number, usuarioId?: number) {
   const publicacion = await prisma.publicacion.findUnique({ where: { id }, select: camposPublicos });
   if (!publicacion) {
     throw AppError.noEncontrado('Publicación');
   }
-  return publicacion;
+  return (await agregarVotosPublicaciones([publicacion], usuarioId))[0];
 }
 
 /** HU-03: un usuario autenticado publica en una categoría existente. */

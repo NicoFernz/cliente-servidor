@@ -1,6 +1,7 @@
 import { traducirErrorPrisma } from '../../db/errores';
 import { prisma } from '../../db/prisma';
 import { AppError } from '../../errors/AppError';
+import { agregarVotosComentarios } from '../votos/votos.service';
 
 const camposPublicos = {
   id: true,
@@ -10,16 +11,17 @@ const camposPublicos = {
 } as const;
 
 /** HU-04: cualquier visitante lista los comentarios de una publicación, los más antiguos primero. */
-export async function listarComentarios(publicacionId: number) {
+export async function listarComentarios(publicacionId: number, usuarioId?: number) {
   const existe = await prisma.publicacion.count({ where: { id: publicacionId } });
   if (!existe) {
     throw AppError.noEncontrado('Publicación');
   }
-  return prisma.comentario.findMany({
+  const comentarios = await prisma.comentario.findMany({
     where: { publicacionId },
     select: camposPublicos,
     orderBy: [{ creadoEn: 'asc' }, { id: 'asc' }],
   });
+  return agregarVotosComentarios(comentarios, usuarioId);
 }
 
 /** HU-04: un usuario autenticado comenta; si la publicación no existe (FK), 404. */
