@@ -44,6 +44,17 @@ describe('votos.service · publicaciones y comentarios (HU-07)', () => {
     expect((await listarPublicaciones({}, betoId))[0].votos).toEqual({ positivos: 0, negativos: 1, miVoto: 'NEGATIVO' });
   });
 
+  it('dos solicitudes concurrentes conservan un solo voto por usuario y publicación', async () => {
+    await Promise.all([
+      votarPublicacion(publicacionId, betoId, 'POSITIVO'),
+      votarPublicacion(publicacionId, betoId, 'NEGATIVO'),
+    ]);
+
+    expect(await prisma.votoPublicacion.count({ where: { publicacionId, usuarioId: betoId } })).toBe(1);
+    const resumen = (await listarPublicaciones({}, betoId))[0].votos;
+    expect(resumen.positivos + resumen.negativos).toBe(1);
+  });
+
   it('el autor no puede votar su propia publicación', async () => {
     await expect(votarPublicacion(publicacionId, anaId, 'POSITIVO')).rejects.toMatchObject({ status: 403 });
   });

@@ -9,6 +9,8 @@ export interface ResumenVotos {
 }
 
 type ElementoConId = { id: number };
+type ConteoVoto = { recursoId: number; valor: ValorVoto; cantidad: number };
+type VotoPropio = { recursoId: number; valor: ValorVoto };
 
 export async function agregarVotosPublicaciones<T extends ElementoConId>(
   publicaciones: T[],
@@ -92,8 +94,7 @@ function verificarPuedeVotar(recurso: { autorId: number } | null, usuarioId: num
 }
 
 async function resumenesPublicaciones(publicacionIds: number[], usuarioId?: number) {
-  const resumenes = new Map<number, ResumenVotos>();
-  if (publicacionIds.length === 0) return resumenes;
+  if (publicacionIds.length === 0) return new Map<number, ResumenVotos>();
 
   const [conteos, propios] = await Promise.all([
     prisma.votoPublicacion.groupBy({
@@ -109,23 +110,19 @@ async function resumenesPublicaciones(publicacionIds: number[], usuarioId?: numb
       : Promise.resolve([]),
   ]);
 
-  for (const id of publicacionIds) {
-    resumenes.set(id, { positivos: 0, negativos: 0, miVoto: null });
-  }
-  for (const { publicacionId, valor, _count } of conteos) {
-    const resumen = resumenes.get(publicacionId)!;
-    if (valor === 'POSITIVO') resumen.positivos = _count._all;
-    else resumen.negativos = _count._all;
-  }
-  for (const voto of propios) {
-    resumenes.get(voto.publicacionId)!.miVoto = voto.valor;
-  }
-  return resumenes;
+  return construirResumenes(
+    publicacionIds,
+    conteos.map(({ publicacionId, valor, _count }) => ({
+      recursoId: publicacionId,
+      valor,
+      cantidad: _count._all,
+    })),
+    propios.map(({ publicacionId, valor }) => ({ recursoId: publicacionId, valor })),
+  );
 }
 
 async function resumenesComentarios(comentarioIds: number[], usuarioId?: number) {
-  const resumenes = new Map<number, ResumenVotos>();
-  if (comentarioIds.length === 0) return resumenes;
+  if (comentarioIds.length === 0) return new Map<number, ResumenVotos>();
 
   const [conteos, propios] = await Promise.all([
     prisma.votoComentario.groupBy({
@@ -141,16 +138,28 @@ async function resumenesComentarios(comentarioIds: number[], usuarioId?: number)
       : Promise.resolve([]),
   ]);
 
-  for (const id of comentarioIds) {
-    resumenes.set(id, { positivos: 0, negativos: 0, miVoto: null });
+  return construirResumenes(
+    comentarioIds,
+    conteos.map(({ comentarioId, valor, _count }) => ({
+      recursoId: comentarioId,
+      valor,
+      cantidad: _count._all,
+    })),
+    propios.map(({ comentarioId, valor }) => ({ recursoId: comentarioId, valor })),
+  );
+}
+
+function construirResumenes(ids: number[], conteos: ConteoVoto[], propios: VotoPropio[]) {
+  const resumenes = new Map<number, ResumenVotos>(
+    ids.map((id) => [id, { positivos: 0, negativos: 0, miVoto: null }]),
+  );
+  for (const { recursoId, valor, cantidad } of conteos) {
+    const resumen = resumenes.get(recursoId)!;
+    if (valor === 'POSITIVO') resumen.positivos = cantidad;
+    else resumen.negativos = cantidad;
   }
-  for (const { comentarioId, valor, _count } of conteos) {
-    const resumen = resumenes.get(comentarioId)!;
-    if (valor === 'POSITIVO') resumen.positivos = _count._all;
-    else resumen.negativos = _count._all;
-  }
-  for (const voto of propios) {
-    resumenes.get(voto.comentarioId)!.miVoto = voto.valor;
+  for (const { recursoId, valor } of propios) {
+    resumenes.get(recursoId)!.miVoto = valor;
   }
   return resumenes;
 }

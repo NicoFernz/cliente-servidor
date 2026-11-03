@@ -121,4 +121,26 @@ describe('GET de publicaciones y comentarios con resumen de votos (HU-07)', () =
 
     expect(res.body.comentarios[0].votos).toEqual({ positivos: 0, negativos: 1, miVoto: 'NEGATIVO' });
   });
+
+  it('un token inválido en una consulta pública responde 401', async () => {
+    const res = await request(app)
+      .get(`/api/publicaciones/${publicacionId}`)
+      .set('Authorization', 'Bearer token-invalido');
+
+    expect(res.status).toBe(401);
+  });
+
+  it('permite retirar el voto de un comentario', async () => {
+    await request(app)
+      .put(`/api/votos/comentarios/${comentarioId}`)
+      .set('Authorization', `Bearer ${tokenBeto}`)
+      .send({ valor: 'NEGATIVO' });
+
+    const res = await request(app)
+      .delete(`/api/votos/comentarios/${comentarioId}`)
+      .set('Authorization', `Bearer ${tokenBeto}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.votos).toEqual({ positivos: 0, negativos: 0, miVoto: null });
+  });
 });
