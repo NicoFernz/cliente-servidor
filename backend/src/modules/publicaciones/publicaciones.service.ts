@@ -45,7 +45,8 @@ export async function obtenerPublicacion(id: number, usuarioId?: number) {
 /** HU-03: un usuario autenticado publica en una categoría existente. */
 export async function crearPublicacion(autorId: number, datos: DatosPublicacion) {
   try {
-    return await prisma.publicacion.create({ data: { ...datos, autorId }, select: camposPublicos });
+    const publicacion = await prisma.publicacion.create({ data: { ...datos, autorId }, select: camposPublicos });
+    return (await agregarVotosPublicaciones([publicacion], autorId))[0];
   } catch (error) {
     throw traducirErrorPrisma(error, categoriaInexistente());
   }
@@ -58,7 +59,8 @@ export async function editarPublicacion(id: number, usuario: UsuarioToken, datos
     throw AppError.prohibido('Solo el autor puede editar la publicación');
   }
   try {
-    return await prisma.publicacion.update({ where: { id }, data: datos, select: camposPublicos });
+    const publicacion = await prisma.publicacion.update({ where: { id }, data: datos, select: camposPublicos });
+    return (await agregarVotosPublicaciones([publicacion], usuario.id))[0];
   } catch (error) {
     throw traducirErrorPrisma(error, categoriaInexistente());
   }
