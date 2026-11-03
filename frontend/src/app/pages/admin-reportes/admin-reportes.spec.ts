@@ -12,7 +12,7 @@ const reporte = (id: number, publicacionId: number, titulo: string, motivo = 'Co
   estado: 'PENDIENTE',
   creadoEn: '2026-11-01T12:00:00Z',
   actualizadoEn: '2026-11-01T12:00:00Z',
-  publicacion: { id: publicacionId, titulo },
+  publicacion: { id: publicacionId, titulo, ocultaEn: null },
   autor: { id: 2, nombre: 'Beto' },
 });
 
@@ -61,14 +61,15 @@ describe('AdminReportes (HU-06b)', () => {
     expect(pantalla().textContent).toContain('No hay reportes pendientes');
   });
 
-  it('cambiar de filtro pide los reportes de ese estado y no muestra acciones', async () => {
+  it('cambiar de filtro pide los reportes de ese estado sin mostrar acciones del reporte', async () => {
     await responderListado('PENDIENTE', []);
 
     boton('Descartados').click();
     await responderListado('DESCARTADO', [{ ...reporte(3, 12, 'Ya revisada'), estado: 'DESCARTADO' }]);
 
     expect(titulos()).toEqual(['Ya revisada']);
-    expect(pantalla().querySelector('.acciones')).toBeNull();
+    expect(boton('Marcar resuelto')).toBeUndefined();
+    expect(boton('Ocultar durante revisión')).toBeTruthy();
     expect(boton('Descartados').getAttribute('aria-pressed')).toBe('true');
   });
 
