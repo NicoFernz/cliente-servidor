@@ -17,7 +17,7 @@
 | 7 | HU-06b | Moderación de reportes (admin) | Media | HU-05 | Terminada | #9 |
 | 8 | HU-07 | Votos en publicaciones y comentarios | Media | HU-02, HU-03, HU-04 | En desarrollo | — |
 | 9 | HU-08 | Ocultar publicaciones durante revisión | Media | HU-05, HU-06b | Terminada localmente | PR pendiente |
-| 10 | HU-09 | Historial de moderación y borrado lógico | Media | HU-08, HU-06b | En desarrollo | — |
+| 10 | HU-09 | Historial de moderación y borrado lógico | Media | HU-08, HU-06b | Terminada localmente | PR pendiente |
 
 HU-02 a HU-04 se mergearon primero en ramas apiladas (#2 a #5) y llegaron juntas a `develop` en #7. `features/integracion.feature` recorre el flujo de las historias ya integradas.
 
@@ -215,7 +215,7 @@ Se divide en tareas: **(a)** listar y ver detalle · **(b)** crear · **(c)** ed
 ## HU-09 — Historial de moderación y borrado lógico
 
 - **Prioridad:** Media
-- **Estado:** en desarrollo (rama `feature/HU-09-historial`); depende de HU-08.
+- **Estado:** terminada localmente (PR pendiente; rama `feature/HU-09-historial`).
 - **Descripción:** Como administrador, quiero consultar las acciones de moderación y conservar evidencia al retirar una publicación para auditar decisiones.
 
 **Criterios de aceptación**
